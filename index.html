@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <title>Proyecto #2 - Grafos</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="Materialize/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+
+  <!---JavaScript-->
+  <script href="Materialize/js/bin/materialize.min.js"></script>
+</head>
+
+<body>
+  <nav class="blue darken-4" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Proyecto 2</a>
+    </div>
+  </nav>
+  <!--Nav Ends-->
+  <div class="container">
+    <div id="title-group" class="center-align">
+      <h1>Grafos</h1>
+      <a id="addVerBtn" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Nuevo Vértice</a>
+      <div class="row">
+        <br/>
+        <div class="valign-wrapper">
+          <div class="col s6">
+            <label>Vértice de Salida</label>
+            <div class="input-field">
+              <select id="salidaSelect" class="browser-default">
+                <option value="" disabled selected>Selecciona un Valor</option>
+                <option value="" selected>Grafo 1</option>
+                <option value="" selected>Grafo 1</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col s6">
+            <label>Vértice de Llegada</label>
+            <div class="input-field">
+              <select id="llegadaSelect" class="browser-default">
+                <option value="" disabled selected>Selecciona un Valor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <a id="addConBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">add</i>Nueva Conexión</a>
+
+      </div>
+    </div>
+
+
+  </div>
+</body>
+
+</html>
