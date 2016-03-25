@@ -36,7 +36,7 @@
       <div class="row">
         <br/>
         <div class="valign-wrapper">
-          <div class="col s6">
+          <div class="col s5">
             <label>Vértice de Salida</label>
             <div class="input-field">
               <select ng-model="selectedSalida" ng-options="vertice.id for vertice in vertices" id="salidaSelect" class="browser-default">
@@ -45,16 +45,24 @@
             </div>
           </div>
 
-          <div class="col s6">
+          <div class="col s5">
             <label>Vértice de Llegada</label>
             <div class="input-field">
-              <select ng-model="selectedSalida" ng-options="vertice.id for vertice in vertices" id="llegadaSelect" class="browser-default">
-                <option value="" disabled selected>Selecciona un Valor</option>
+              <select ng-model="selectedLlegada" ng-options="vertice.id for vertice in vertices" id="llegadaSelect" class="browser-default">
+                <option value="" selected>Selecciona un Valor</option>
               </select>
             </div>
           </div>
+          <div class="input-field col s2">
+            <input id="costo" type="number" class="validate">
+            <label for="costo">Costo</label>
+          </div>
+          <div class="col s2">
+            <input ng-model="bidireccional" ng-checked="bidireccional" type="checkbox" id="bidireccional" />
+            <label for="bidireccional">Bidireccional</label>
+          </div>
         </div>
-        <a id="addConBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">add</i>Nueva Conexión</a>
+        <a ng-click="nuevaConexion()" id="addConBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">add</i>Nueva Conexión</a>
       </div>
     </div>
 
@@ -72,20 +80,21 @@
           <ul class="collection">
             <li ng-repeat="vertice in vertices track by vertice.id" class="collection-item avatar">
               <i class="circle red" style="background-color: {{vertice.color}} !important;"></i>
-              <span class="title">{{vertice.id}}</span>
-              <p>First Line
-                <br> Second Line
-              </p>
+              <span class=""></span>
+              <h5>
+                {{vertice.id}}
+              </h5>
             </li>
           </ul>
         </div>
 
         <div id="conexionesTab" class="col s12">
           <ul class="collection">
-            <li class="collection-item valign-wrapper">
+            <h1 class="center-align" ng-if="matriz.length==0">No hay conexiones...</h1>
+            <li ng-if="matriz.length!=0" ng-repeat="conexion in matriz" class="collection-item valign-wrapper">
               <div class="col s4">
                 <i class="circle red"></i>
-                <h4 class="center-align">First Line</h4>
+                <h4 class="center-align">{{conexion.salida}}</h4>
               </div>
 
               <div class="col s2">
@@ -94,7 +103,7 @@
 
               <div class="col s4">
                 <i class="circle red"></i>
-                <h4 class="">First Line</h4>
+                <h4 class="">{{conexion.llegada}}</h4>
               </div>
             </li>
           </ul>

@@ -1,6 +1,7 @@
 var app = angular.module("GraphManager", []);
 
 app.controller('mainCtrl', function($scope) {
+  $scope.bidireccional=true;
   //variables
   function getRandomColor() {
     var length = 6;
@@ -26,15 +27,16 @@ app.controller('mainCtrl', function($scope) {
     this.id = nextID();
     this.color = getRandomColor();
   }
-  Celda = function(entrada, salida, costo) {
-    this.entrada = entrada;
+  Celda = function(salida, llegada, costo) {
     this.salida = salida;
+    this.llegada = llegada;
+    this.costo=costo;
   }
   var first = {
     "id": 1,
     "color": "#eee"
   };
-  $scope.matriz = [first];
+  $scope.matriz = [];
   $scope.vertices = [first];
 
   $scope.nuevoVertice = function() {
@@ -42,6 +44,29 @@ app.controller('mainCtrl', function($scope) {
     $scope.vertices.push(vertice);
     //alert(JSON.stringify($scope.vertices[2]));
     //alert(($scope.vertices).lenght);
+  }
+
+  $scope.nuevaConexion = function() {
+    var conexion;
+    var salida = ($scope.selectedSalida).id;
+    var llegada = ($scope.selectedLlegada).id;
+    var costo = $("#costo").val();
+    //alert(salida);
+    if (costo == null || costo == "") {
+      costo = 0;
+    }
+    if (salida == null || llegada == null) {
+      alert("Selecciona los vértices de salida y llegada");
+    } else {
+      conexion=new Celda(salida,llegada,costo);
+      //alert(JSON.stringify(conexion));
+      $scope.matriz.push(conexion);
+      if ($scope.bidireccional) {
+        conexion=new Celda(llegada,salida,costo);
+        //alert(JSON.stringify(conexion));
+        $scope.matriz.push(conexion);
+      }
+    }
   }
 
 });
