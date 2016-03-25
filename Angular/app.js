@@ -16,11 +16,14 @@ app.controller('mainCtrl', function($scope) {
     var item;
     for (var i = 0; i < $scope.matriz.length; i++) {
       item = $scope.matriz[i];
-      if (item.salida===vertice.id) {
+      if (item.salida === vertice.id) {
         grado++;
       }
     }
-    return {"grado":grado, "par":((grado%2)===0)}
+    return {
+      "grado": grado,
+      "par": ((grado % 2) === 0)
+    }
   }
 
   function getRandomColor() {
@@ -45,7 +48,7 @@ app.controller('mainCtrl', function($scope) {
   Vertice = function(id, color) {
     this.id = nextID();
     this.color = getRandomColor();
-    this.grado=0;
+    this.grado = 0;
   }
   Celda = function(salida, llegada, costo) {
     this.salida = salida;
@@ -62,22 +65,27 @@ app.controller('mainCtrl', function($scope) {
   }
 
   $scope.nuevaConexion = function() {
+    ($scope.selectedSalida);
     var msg = "";
     var msgBi = ""
     var repetido;
     var repetidoBi;
     var conexion;
-    var salida = ($scope.selectedSalida).id;
-    var llegada = ($scope.selectedLlegada).id;
+    var salida;
+    var llegada;
+
     var costo = $("#costo").val();
-    var circular = (llegada === salida);
+    var circular;
     //alert(salida);
     if (costo == null || costo == "") {
       costo = 0;
     }
-    if (salida == null || llegada == null) {
-      alert("Selecciona los vértices de salida y llegada");
+    if (typeof $scope.selectedSalida === "undefined" || typeof $scope.selectedLlegada === "undefined") {
+      Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
     } else {
+      salida = ($scope.selectedSalida).id;
+      llegada = ($scope.selectedLlegada).id;
+      circular = (llegada === salida);
       for (var i = 0; i < $scope.matriz.length; i++) {
         if ($scope.matriz[i].salida === salida && $scope.matriz[i].llegada === llegada) {
           repetido = true;
@@ -129,7 +137,13 @@ app.controller('mainCtrl', function($scope) {
     //alert(id);
     $scope.matriz = $scope.matriz.filter(function(item) {
       return (item.salida !== conexion.salida || item.llegada !== conexion.llegada);
+      //le bajamos el grado al vértice de salida
     });
+    for (var i = 0; i < $scope.vertices.length; i++) {
+      if ($scope.vertices[i].id === conexion.salida) {
+        $scope.vertices[i].grado--;
+      }
+    }
   }
 
 });
