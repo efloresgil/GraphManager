@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="GraphManager">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -19,9 +19,11 @@
 
   <script src="Materialize/js/bin/materialize.min.js"></script>
   <script src="Materialize/js/bin/init.js"></script>
+  <script src="Angular\app.js"></script>
+
 </head>
 
-<body>
+<body ng-controller="mainCtrl">
   <nav class="" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Proyecto 2</a>
     </div>
@@ -30,17 +32,15 @@
   <div class="container">
     <div id="title-group" class="center-align">
       <h1>Grafos</h1>
-      <a id="addVerBtn" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Nuevo Vértice</a>
+      <a ng-click="nuevoVertice()" id="addVerBtn" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Nuevo Vértice</a>
       <div class="row">
         <br/>
         <div class="valign-wrapper">
           <div class="col s6">
             <label>Vértice de Salida</label>
             <div class="input-field">
-              <select id="salidaSelect" class="browser-default">
+              <select ng-model="selectedSalida" ng-options="vertice.id for vertice in vertices" id="salidaSelect" class="browser-default">
                 <option value="" disabled selected>Selecciona un Valor</option>
-                <option value="" selected>Grafo 1</option>
-                <option value="" selected>Grafo 1</option>
               </select>
             </div>
           </div>
@@ -48,7 +48,7 @@
           <div class="col s6">
             <label>Vértice de Llegada</label>
             <div class="input-field">
-              <select id="llegadaSelect" class="browser-default">
+              <select ng-model="selectedSalida" ng-options="vertice.id for vertice in vertices" id="llegadaSelect" class="browser-default">
                 <option value="" disabled selected>Selecciona un Valor</option>
               </select>
             </div>
@@ -70,9 +70,9 @@
         </div>
         <div id="grafosTab" class="col s12">
           <ul class="collection">
-            <li class="collection-item avatar">
-              <i class="circle red"></i>
-              <span class="title">Title</span>
+            <li ng-repeat="vertice in vertices track by vertice.id" class="collection-item avatar">
+              <i class="circle red" style="background-color: {{vertice.color}} !important;"></i>
+              <span class="title">{{vertice.id}}</span>
               <p>First Line
                 <br> Second Line
               </p>
