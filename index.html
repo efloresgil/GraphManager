@@ -84,6 +84,7 @@
               <h5>
                 {{vertice.id}}
               </h5>
+              <a ng-click="eliminarVertice(vertice.id)" href="#!" class="secondary-content"><i class="material-icons text-red small">delete</i></a>
             </li>
           </ul>
         </div>
@@ -105,6 +106,7 @@
                 <i class="circle red"></i>
                 <h4 class="">{{conexion.llegada}}</h4>
               </div>
+              <a ng-click="eliminarConexion(conexion)" href="#!" class="secondary-content"><i class="material-icons text-red small">delete</i></a>
             </li>
           </ul>
         </div>

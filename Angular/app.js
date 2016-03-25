@@ -69,4 +69,26 @@ app.controller('mainCtrl', function($scope) {
     }
   }
 
+
+  $scope.eliminarVertice = function(id) {
+    //alert(id);
+    $scope.matriz=$scope.matriz.filter(function(item){
+      //alert (item.salida);
+      //alert(item.llegada);
+      //alert(item.salida!==id || item.llegada!==id);
+      return (item.salida!==id && item.llegada!==id);
+    });
+
+    $scope.vertices=$scope.vertices.filter(function(item){
+      return item.id!==id;
+    });
+  }
+
+  $scope.eliminarConexion = function(conexion) {
+    //alert(id);
+    $scope.matriz=$scope.matriz.filter(function(item){
+      return (item.salida!==conexion.salida || item.llegada!==conexion.llegada);
+    });
+  }
+
 });
