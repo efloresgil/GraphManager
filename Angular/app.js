@@ -47,10 +47,15 @@ app.controller('mainCtrl', function($scope) {
   }
 
   $scope.nuevaConexion = function() {
+    var msg="";
+    var msgBi=""
+    var repetido;
+    var repetidoBi;
     var conexion;
     var salida = ($scope.selectedSalida).id;
     var llegada = ($scope.selectedLlegada).id;
     var costo = $("#costo").val();
+    var circular = (llegada === salida);
     //alert(salida);
     if (costo == null || costo == "") {
       costo = 0;
@@ -58,24 +63,43 @@ app.controller('mainCtrl', function($scope) {
     if (salida == null || llegada == null) {
       alert("Selecciona los vértices de salida y llegada");
     } else {
-      conexion=new Celda(salida,llegada,costo);
-      //alert(JSON.stringify(conexion));
-      $scope.matriz.push(conexion);
-      if ($scope.bidireccional) {
-        conexion=new Celda(llegada,salida,costo);
-        //alert(JSON.stringify(conexion));
+      for (var i = 0; i < $scope.matriz.length; i++) {
+        if ($scope.matriz[i].salida===salida && $scope.matriz[i].llegada===llegada) {
+          repetido=true;
+          msg += salida + " -> " + llegada + " ya existe, por lo que no fue creado \n";
+          break;
+        }
+      }
+      if (!repetido) {
+        conexion=new Celda(salida,llegada,costo);
         $scope.matriz.push(conexion);
+        msg += salida + " -> " + llegada + " agregado \n";
+      }
+
+      if ($scope.bidireccional && !circular) {
+        for (var i = 0; i < $scope.matriz.length; i++) {
+          if ($scope.matriz[i].salida===llegada && $scope.matriz[i].llegada===salida) {
+            repetidoBi=true;
+            msgBi += llegada + " -> " + salida + " ya existe, por lo que no fue creado";
+            break;
+          }
+        }
+        if (!repetidoBi) {
+          conexion=new Celda(llegada,salida,costo);
+          $scope.matriz.push(conexion);
+          msgBi += llegada + " -> " + salida + " agregado";
+        }
       }
     }
+    //alert(msg);
+    Materialize.toast(msg, 5000);
+    Materialize.toast(msgBi, 5000);
   }
 
 
   $scope.eliminarVertice = function(id) {
     //alert(id);
     $scope.matriz=$scope.matriz.filter(function(item){
-      //alert (item.salida);
-      //alert(item.llegada);
-      //alert(item.salida!==id || item.llegada!==id);
       return (item.salida!==id && item.llegada!==id);
     });
 
