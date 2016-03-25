@@ -104,8 +104,9 @@
 
               <div class="col s4">
                 <i class="circle red"></i>
-                <h4 class="">{{conexion.llegada}}</h4>
+                <h4 class="">costo: {{conexion.llegada}}</h4>
               </div>
+              <span ng-if="conexion.costo !== 0" class="badge">{{conexion.costo}}</span>
               <a ng-click="eliminarConexion(conexion)" href="#!" class="secondary-content"><i class="material-icons text-red small">delete</i></a>
             </li>
           </ul>
