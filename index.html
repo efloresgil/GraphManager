@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
-  <title>Proyecto #2 - Grafos</title>
+  <title>Proyecto #3 - Grafos</title>
 
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -25,7 +25,7 @@
 
 <body ng-controller="mainCtrl">
   <nav class="" role="navigation">
-    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Proyecto 2</a>
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Proyecto 3</a>
     </div>
   </nav>
   <!--Nav Ends-->
@@ -107,14 +107,16 @@
 
               <div class="col s4">
                 <i class="circle red"></i>
-                <h4 class="">costo: {{conexion.llegada}}</h4>
+                <h4 class="">{{conexion.llegada}}</h4>
               </div>
-              <span ng-if="conexion.costo !== 0" class="badge">{{conexion.costo}}</span>
+              <span ng-if="conexion.costo !== 0" class="badge blue-grey white-text">{{conexion.costo}}</span>
               <a ng-click="eliminarConexion(conexion)" href="#!" class="secondary-content"><i class="material-icons text-red small">delete</i></a>
             </li>
           </ul>
         </div>
-        <div id="eulerTab" class="col s12">Test 3</div>
+        <div id="eulerTab" class="col s12">
+
+        </div>
         <div id="dijkstraTab" class="col s12">Test 4</div>
       </div>
     </div>
