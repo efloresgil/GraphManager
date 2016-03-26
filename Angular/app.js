@@ -65,6 +65,7 @@ app.controller('mainCtrl', function($scope) {
   $scope.nuevoVertice = function() {
     var vertice = new Vertice(1, "#eee");
     $scope.vertices.push(vertice);
+    calcularEuleriano();
     //alert(JSON.stringify($scope.vertices[2]));
     //alert(($scope.vertices).lenght);
   }
@@ -124,6 +125,7 @@ app.controller('mainCtrl', function($scope) {
     //alert(msg);
     Materialize.toast(msg, 5000);
     Materialize.toast(msgBi, 5000);
+    calcularEuleriano();
   }
 
 
@@ -136,7 +138,7 @@ app.controller('mainCtrl', function($scope) {
     //Usamos esto y no filter para controlar los grados de los vertices de entrada
     //Hay que tener cuidado aqui, porque lenght cambia en tiempo real
     for (var i = $scope.matriz.length - 1;
-      (i < $scope.matriz.length) && (i > 0); i--) {
+      (i < $scope.matriz.length) && (i >= 0); i--) {
       //alert($scope.matriz.length);
       //alert(i);
       //alert($scope.matriz[i].llegada+" -> "+ $scope.matriz[i].salida);
