@@ -171,7 +171,7 @@ app.controller('mainCtrl', function($scope) {
     var inpares = 0;
     for (var i = 0; i < $scope.vertices.length; i++) {
       //total += $scope.vertices[i].grado;
-      if (($scope.vertices[i].grado % 2) !== 0) {
+      if (($scope.vertices[i].grado % 2) !== 0 || $scope.vertices[i].grado === 0) {
         inpares++;
       } else {
         pares++;
@@ -179,11 +179,65 @@ app.controller('mainCtrl', function($scope) {
     }
     if (inpares === 2) {
       $scope.tipo = $scope.SEMIEULER;
-    } else if (pares === $scope.vertices.length) {
+    } else if (pares === $scope.vertices.length && inpares === 0) {
+      //alert("Carefull");
       $scope.tipo = $scope.EULER;
+      var v = $scope.vertices;
+      var c = $scope.matriz;
+      var r = $scope.vertices[0].id;
+      var f = $scope.vertices[0].id;
+      //alert("v: " + v + " c: " + c + " r: " + r + " f: " + f);
+      $("#path").html("Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, [])));
     } else {
       $scope.tipo = $scope.NOEULER;
     }
   }
 
+  function Fleury(v, c, r, f, path) {
+    //alert("v: " + v.length + " c: " + c.length + " r: " + r + " f: " + f + " p: " + path.length);
+    var path_clone = path;
+    for (var i = 0; i < c.length; i++) {
+      if (c[i].salida !== r) {
+        continue;
+      }
+      //alert("Conexion: " + JSON.stringify(c[i]));
+      //alert("path: " +  + "f: " + f)
+      if (c[i].llegada === f && path.length >= $scope.vertices.length - 1) {
+        path_clone.push(c[i]);
+        //alert("PATH: " + path.length);
+        return path;
+      } else {
+        var c_clone = c;
+        var v_clone = v;
+
+        c_clone = c_clone.filter(function(item) {
+          //eliminamos esta conexion, y si la tiene, su inversa
+          return (item.salida !== c[i].salida || item.llegada !== c[i].llegada) && (item.salida !== c[i].llegada || item.llegada !== c[i].salida);
+        });
+        v_clone = v_clone.filter(function(item) {
+          return item.id !== r;
+        });
+        path_clone.push(c[i]);
+        var res = Fleury(v_clone, c_clone, c[i].llegada, f, path_clone);
+        return res;
+      }
+    }
+    return false;
+  }
+
+
+
 });
+
+function parseFleury(res) {
+  alert(res.length)
+  var msg = "";
+  if (res === false) {
+    return "false";
+  } else {
+    for (var i = 0; i < res.length; i++) {
+      msg += res[i].salida + ", ";
+    }
+  }
+  return msg;
+}
