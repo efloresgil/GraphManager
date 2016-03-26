@@ -6,8 +6,13 @@ app.controller('mainCtrl', function($scope) {
     "color": "#eee",
     "grado": 0
   };
+  //variables del scope principal
   $scope.matriz = [];
   $scope.vertices = [first];
+  $scope.NOEULER = "No Euleriano, no Semieuleriano";
+  $scope.EULER = "Euleriano";
+  $scope.SEMIEULER = "Semieuleriano";
+  $scope.tipo = $scope.NOEULER;
 
   $scope.bidireccional = true;
   //variables
@@ -56,7 +61,7 @@ app.controller('mainCtrl', function($scope) {
     this.costo = costo;
   }
 
-
+  //SCOPE variables y funciones
   $scope.nuevoVertice = function() {
     var vertice = new Vertice(1, "#eee");
     $scope.vertices.push(vertice);
@@ -124,9 +129,21 @@ app.controller('mainCtrl', function($scope) {
 
   $scope.eliminarVertice = function(id) {
     //alert(id);
-    $scope.matriz = $scope.matriz.filter(function(item) {
-      return (item.salida !== id && item.llegada !== id);
-    });
+    //$scope.matriz = $scope.matriz.filter(function(item) {
+    //  return (item.salida !== id && item.llegada !== id) || ;
+    //});
+
+    //Usamos esto y no filter para controlar los grados de los vertices de entrada
+    //Hay que tener cuidado aqui, porque lenght cambia en tiempo real
+    for (var i = $scope.matriz.length - 1;
+      (i < $scope.matriz.length) && (i > 0); i--) {
+      //alert($scope.matriz.length);
+      //alert(i);
+      //alert($scope.matriz[i].llegada+" -> "+ $scope.matriz[i].salida);
+      if ($scope.matriz[i].llegada === id || $scope.matriz[i].salida === id) {
+        $scope.eliminarConexion($scope.matriz[i]);
+      }
+    }
 
     $scope.vertices = $scope.vertices.filter(function(item) {
       return item.id !== id;
@@ -142,7 +159,28 @@ app.controller('mainCtrl', function($scope) {
     for (var i = 0; i < $scope.vertices.length; i++) {
       if ($scope.vertices[i].id === conexion.salida) {
         $scope.vertices[i].grado--;
+        calcularEuleriano();
       }
+    }
+  }
+
+  function calcularEuleriano() {
+    var pares = 0;
+    var inpares = 0;
+    for (var i = 0; i < $scope.vertices.length; i++) {
+      //total += $scope.vertices[i].grado;
+      if (($scope.vertices[i].grado % 2) !== 0) {
+        inpares++;
+      } else {
+        pares++;
+      }
+    }
+    if (inpares === 2) {
+      $scope.tipo = $scope.SEMIEULER;
+    } else if (pares === $scope.vertices.length) {
+      $scope.tipo = $scope.EULER;
+    } else {
+      $scope.tipo = $scope.NOEULER;
     }
   }
 

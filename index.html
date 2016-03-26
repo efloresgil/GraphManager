@@ -78,6 +78,7 @@
         </div>
         <div id="grafosTab" class="col s12">
           <ul class="collection">
+            <h1 class="center-align" ng-if="vertices.length==0">No hay vértices...</h1>
             <li ng-repeat="vertice in vertices track by vertice.id" class="collection-item avatar">
               <i class="circle red" style="background-color: {{vertice.color}} !important;"></i>
               <span class=""></span>
@@ -115,7 +116,7 @@
           </ul>
         </div>
         <div id="eulerTab" class="col s12">
-
+          <h2 class="center-align">Grafo {{tipo}}</h2>
         </div>
         <div id="dijkstraTab" class="col s12">Test 4</div>
       </div>
