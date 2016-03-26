@@ -14,6 +14,8 @@ app.controller('mainCtrl', function($scope) {
   $scope.SEMIEULER = "Semieuleriano";
   $scope.tipo = $scope.NOEULER;
 
+  $scope.path_html = "";
+
   $scope.bidireccional = true;
   //variables
   function calcularGrado(vertice) {
@@ -186,8 +188,13 @@ app.controller('mainCtrl', function($scope) {
       var c = $scope.matriz;
       var r = $scope.vertices[0].id;
       var f = $scope.vertices[0].id;
+      var msg = "Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, []));
+      if (msg !== $scope.path_html) {
+        $scope.path_html = "Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, []));
+        Materialize.toast("Nuevo camino de Euler calculado!", 3000);
+      }
       //alert("v: " + v + " c: " + c + " r: " + r + " f: " + f);
-      $("#path").html("Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, [])));
+      //$("#path").html("Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, [])));
     } else {
       $scope.tipo = $scope.NOEULER;
     }
@@ -230,7 +237,7 @@ app.controller('mainCtrl', function($scope) {
 });
 
 function parseFleury(res) {
-  alert(res.length)
+  //alert(JSON.stringify(res[res.length-1]));
   var msg = "";
   if (res === false) {
     return "false";
@@ -238,6 +245,7 @@ function parseFleury(res) {
     for (var i = 0; i < res.length; i++) {
       msg += res[i].salida + ", ";
     }
+    msg+=res[res.length-1].llegada;
   }
   return msg;
 }
