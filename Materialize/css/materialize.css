@@ -8473,4 +8473,10 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 ul.collection li h5 {
   margin: 0px; }
 
+#dijkstraBtn {
+  margin-bottom: 1rem; }
+
+#dijkstraTab .row {
+  padding: 1rem; }
+
 /*# sourceMappingURL=materialize.css.map */

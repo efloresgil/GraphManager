@@ -159,7 +159,7 @@ app.controller('mainCtrl', function($scope) {
 
   $scope.eliminarConexion = function(conexion) {
     //alert(id);
-    var circular=conexion.salida===conexion.llegada;
+    var circular = conexion.salida === conexion.llegada;
     $scope.matriz = $scope.matriz.filter(function(item) {
       return (item.salida !== conexion.salida || item.llegada !== conexion.llegada);
       //le bajamos el grado al vértice de salida
@@ -172,6 +172,12 @@ app.controller('mainCtrl', function($scope) {
         calcularEuleriano();
       }
     }
+  }
+
+  //Dijkstra
+  $scope.dijkstraPath = function(salida, llegada) {
+    alert("Salida: " + JSON.stringify(salida));
+    alert("Llegada: " + JSON.stringify(llegada));
   }
 
   function calcularEuleriano() {
@@ -240,8 +246,7 @@ app.controller('mainCtrl', function($scope) {
     } else if (ceros.length !== 0) {
       $scope.tipo = $scope.ISOLATED;
       $scope.path_html = "";
-    }
-    else {
+    } else {
       $scope.tipo = $scope.NOEULER;
       $scope.path_html = "";
     }
@@ -252,6 +257,8 @@ app.controller('mainCtrl', function($scope) {
 
 });
 
+
+//Euler
 function CircuitoFleury(c_original, v, c, r, f, path) {
   //alert("v: " + v.length + " c: " + c.length + " r: " + r + " f: " + f + " p: " + path.length);
   //console.log(path);
