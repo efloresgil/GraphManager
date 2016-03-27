@@ -9,10 +9,11 @@ app.controller('mainCtrl', function($scope) {
   //variables del scope principal
   $scope.matriz = [];
   $scope.vertices = [first];
-  $scope.NOEULER = "No Euleriano, no Semieuleriano";
-  $scope.EULER = "Euleriano";
-  $scope.SEMIEULER = "Semieuleriano";
-  $scope.tipo = $scope.NOEULER;
+  $scope.NOEULER = "Grafo No Euleriano, no Semieuleriano";
+  $scope.EULER = "Grafo Euleriano";
+  $scope.SEMIEULER = "Grafo Semieuleriano";
+  $scope.ISOLATED = "Hay vértices aislados en el grafo (grado 0). No Euleriano";
+  $scope.tipo = $scope.ISOLATED;
 
   $scope.path_html = "";
 
@@ -169,20 +170,43 @@ app.controller('mainCtrl', function($scope) {
   }
 
   function calcularEuleriano() {
-    var pares = 0;
-    var inpares = 0;
+    var pares = [];
+    var inpares = [];
+    var ceros = [];
     for (var i = 0; i < $scope.vertices.length; i++) {
       //total += $scope.vertices[i].grado;
-      if (($scope.vertices[i].grado % 2) !== 0 || $scope.vertices[i].grado === 0) {
-        inpares++;
+      if (($scope.vertices[i].grado % 2) !== 0) {
+        inpares.push($scope.vertices[i]);
+      } else if ($scope.vertices[i].grado !== 0) {
+        pares.push($scope.vertices[i]);
       } else {
-        pares++;
+        ceros.push($scope.vertices[i])
       }
     }
-    if (inpares === 2) {
+    if (inpares.length === 2 && ceros.length === 0) {
+      var primero = inpares[0];
+      var segundo = inpares[1];
+
       $scope.tipo = $scope.SEMIEULER;
-      $scope.path_html = "";
-    } else if (pares === $scope.vertices.length && inpares === 0) {
+
+      var v = $scope.vertices;
+      var c = $scope.matriz;
+      var r = primero.id;
+      var f = primero.id;
+      var l = segundo.id;
+      //var circuito = SemiEulerianoFleury(c, v, c, r, f, l, []);
+      var camino = SemiEulerianoFleury(c, v, c, r, f, l, []);
+      var msg = "";
+      if (camino !== false) {
+        msg += "<h3>" + "El Camino Euleriano es: " + parseFleury(camino) + "</h3>" + "<br/>";
+      } else {
+        msg += "<h3>No existe un Camino Euleriano...</h3><br/>";
+      }
+      if (msg !== $scope.path_html) {
+        $scope.path_html = msg;
+        Materialize.toast("Nuevo camino de Euler calculado!", 3000);
+      }
+    } else if (pares.length === $scope.vertices.length && inpares.length === 0 && ceros.length === 0) {
       //alert("Carefull");
       $scope.tipo = $scope.EULER;
       var v = $scope.vertices;
@@ -208,7 +232,11 @@ app.controller('mainCtrl', function($scope) {
       }
       //alert("v: " + v + " c: " + c + " r: " + r + " f: " + f);
       //$("#path").html("Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, [])));
-    } else {
+    } else if (ceros.length !== 0) {
+      $scope.tipo = $scope.ISOLATED;
+      $scope.path_html = "";
+    }
+    else {
       $scope.tipo = $scope.NOEULER;
       $scope.path_html = "";
     }
@@ -230,7 +258,7 @@ function CircuitoFleury(c_original, v, c, r, f, path) {
     //alert("path: " +  + "f: " + f)
     //c[i].llegada === f &&
     if (c[i].llegada === f && c.length === (2)) {
-      var p_c = path;
+      var p_c = path.slice();
       //alert("Insertado!!:  " + c[i]);
       p_c.push(c[i]);
       //alert("PATH: " + path.length);
@@ -269,7 +297,7 @@ function CaminoFleury(c_original, v, c, r, f, path) {
     //c[i].llegada === f &&
 
     if (c.length === (2)) {
-      var p_c = path;
+      var p_c = path.slice();
       //alert("Success");
       p_c.push(c[i]);
       //alert("Finishing blow is: " + JSON.stringify(c[i]));
@@ -300,6 +328,43 @@ function CaminoFleury(c_original, v, c, r, f, path) {
   return false;
 }
 
+
+function SemiEulerianoFleury(c_original, v, c, r, f, l, path) {
+  //alert("v: " + v.length + " c: " + c.length + " r: " + r + " f: " + f + " p: " + path.length);
+  //console.log(path);
+  for (var i = 0; i < c.length; i++) {
+    if (c[i].salida !== r) {
+      continue;
+    }
+    //alert("Conexion: " + JSON.stringify(c[i]));
+    //alert("path: " +  + "f: " + f)
+    //c[i].llegada === f &&
+    if (c[i].llegada === l && c.length === (2)) {
+      var p_c = path.slice();
+      //alert("Insertado!!:  " + c[i]);
+      p_c.push(c[i]);
+      return p_c;
+    } else {
+      var path_clone = path.slice();
+      var c_clone = c;
+      var v_clone = v;
+
+      c_clone = c_clone.filter(function(item) {
+        //eliminamos esta conexion, y si la tiene, su inversa
+        return (item.salida !== c[i].salida || item.llegada !== c[i].llegada) && (item.salida !== c[i].llegada || item.llegada !== c[i].salida);
+      });
+      v_clone = v_clone.filter(function(item) {
+        return item.id !== r;
+      });
+      path_clone.push(c[i]);
+      var res = SemiEulerianoFleury(c_original, v_clone, c_clone, c[i].llegada, f, l, path_clone);
+      if (res !== false) {
+        return res;
+      }
+    }
+  }
+  return false;
+}
 
 function parseFleury(res) {
   //alert(JSON.stringify(res[res.length-1]));
