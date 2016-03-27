@@ -106,7 +106,9 @@ app.controller('mainCtrl', function($scope) {
         conexion = new Celda(salida, llegada, costo);
         $scope.matriz.push(conexion);
         msg += salida + " -> " + llegada + " agregado \n";
-        $scope.selectedSalida.grado++;
+        if (!circular) {
+          $scope.selectedSalida.grado++;
+        }
       }
 
       if ($scope.bidireccional && !circular) {
@@ -157,13 +159,16 @@ app.controller('mainCtrl', function($scope) {
 
   $scope.eliminarConexion = function(conexion) {
     //alert(id);
+    var circular=conexion.salida===conexion.llegada;
     $scope.matriz = $scope.matriz.filter(function(item) {
       return (item.salida !== conexion.salida || item.llegada !== conexion.llegada);
       //le bajamos el grado al vértice de salida
     });
     for (var i = 0; i < $scope.vertices.length; i++) {
       if ($scope.vertices[i].id === conexion.salida) {
-        $scope.vertices[i].grado--;
+        if (!circular) {
+          $scope.vertices[i].grado--;
+        }
         calcularEuleriano();
       }
     }
