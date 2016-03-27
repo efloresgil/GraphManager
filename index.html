@@ -16,6 +16,7 @@
   !-->
   <script src="Materialize/js/bin/jquery-1.12.1.min.js"></script>
   <script src="Angular\angular.min.js"></script>
+  <script src="Angular\angular-sanitize.min.js"></script>
 
   <script src="Materialize/js/bin/materialize.min.js"></script>
   <script src="Materialize/js/bin/init.js"></script>
@@ -118,7 +119,7 @@
         <div id="eulerTab" class="col s12">
           <h2 class="center-align">Grafo {{tipo}}</h2>
           <br/>
-          <h5 id="path" class="center-align" ng-bind="path_html"></h5>
+          <div id="path" class="center-align" ng-bind-html="path_html"></div>
         </div>
         <div id="dijkstraTab" class="col s12">Test 4</div>
       </div>

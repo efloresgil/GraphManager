@@ -1,4 +1,4 @@
-var app = angular.module("GraphManager", []);
+var app = angular.module("GraphManager", ['ngSanitize']);
 
 app.controller('mainCtrl', function($scope) {
   var first = {
@@ -181,6 +181,7 @@ app.controller('mainCtrl', function($scope) {
     }
     if (inpares === 2) {
       $scope.tipo = $scope.SEMIEULER;
+      $scope.path_html = "";
     } else if (pares === $scope.vertices.length && inpares === 0) {
       //alert("Carefull");
       $scope.tipo = $scope.EULER;
@@ -188,53 +189,117 @@ app.controller('mainCtrl', function($scope) {
       var c = $scope.matriz;
       var r = $scope.vertices[0].id;
       var f = $scope.vertices[0].id;
-      var msg = "Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, []));
+      var circuito = CircuitoFleury(c, v, c, r, f, []);
+      var camino = CaminoFleury(c, v, c, r, f, []);
+      var msg = "";
+      if (circuito !== false) {
+        msg += "<h3>" + "Un Circuito Euleriano es: " + parseFleury(circuito) + "</h3>" + "<br/>";
+      } else {
+        msg += "<h3>No existe un Circuito Euleriano...</h3><br/>";
+      }
+      if (camino !== false) {
+        msg += "<h3>" + "Un Camino Euleriano es: " + parseFleury(camino) + "</h3>" + "<br/>";
+      } else {
+        msg += "<h3>No existe un Camino Euleriano...</h3><br/>";
+      }
       if (msg !== $scope.path_html) {
-        $scope.path_html = "Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, []));
+        $scope.path_html = msg;
         Materialize.toast("Nuevo camino de Euler calculado!", 3000);
       }
       //alert("v: " + v + " c: " + c + " r: " + r + " f: " + f);
       //$("#path").html("Un camino Euleriano es: " + parseFleury(Fleury(v, c, r, f, [])));
     } else {
       $scope.tipo = $scope.NOEULER;
+      $scope.path_html = "";
     }
   }
 
-  function Fleury(v, c, r, f, path) {
-    //alert("v: " + v.length + " c: " + c.length + " r: " + r + " f: " + f + " p: " + path.length);
-    var path_clone = path;
-    for (var i = 0; i < c.length; i++) {
-      if (c[i].salida !== r) {
-        continue;
-      }
-      //alert("Conexion: " + JSON.stringify(c[i]));
-      //alert("path: " +  + "f: " + f)
-      if (c[i].llegada === f && path.length >= $scope.vertices.length - 1) {
-        path_clone.push(c[i]);
-        //alert("PATH: " + path.length);
-        return path;
-      } else {
-        var c_clone = c;
-        var v_clone = v;
-
-        c_clone = c_clone.filter(function(item) {
-          //eliminamos esta conexion, y si la tiene, su inversa
-          return (item.salida !== c[i].salida || item.llegada !== c[i].llegada) && (item.salida !== c[i].llegada || item.llegada !== c[i].salida);
-        });
-        v_clone = v_clone.filter(function(item) {
-          return item.id !== r;
-        });
-        path_clone.push(c[i]);
-        var res = Fleury(v_clone, c_clone, c[i].llegada, f, path_clone);
-        return res;
-      }
-    }
-    return false;
-  }
 
 
 
 });
+
+function CircuitoFleury(c_original, v, c, r, f, path) {
+  //alert("v: " + v.length + " c: " + c.length + " r: " + r + " f: " + f + " p: " + path.length);
+  //console.log(path);
+  for (var i = 0; i < c.length; i++) {
+    if (c[i].salida !== r) {
+      continue;
+    }
+    //alert("Conexion: " + JSON.stringify(c[i]));
+    //alert("path: " +  + "f: " + f)
+    //c[i].llegada === f &&
+    if (c[i].llegada === f && c.length === (2)) {
+      var p_c = path;
+      //alert("Insertado!!:  " + c[i]);
+      p_c.push(c[i]);
+      //alert("PATH: " + path.length);
+      return p_c;
+    } else {
+      var path_clone = path.slice();
+      var c_clone = c;
+      var v_clone = v;
+
+      c_clone = c_clone.filter(function(item) {
+        //eliminamos esta conexion, y si la tiene, su inversa
+        return (item.salida !== c[i].salida || item.llegada !== c[i].llegada) && (item.salida !== c[i].llegada || item.llegada !== c[i].salida);
+      });
+      v_clone = v_clone.filter(function(item) {
+        return item.id !== r;
+      });
+      path_clone.push(c[i]);
+      var res = CircuitoFleury(c_original, v_clone, c_clone, c[i].llegada, f, path_clone);
+      if (res !== false) {
+        return res;
+      }
+    }
+  }
+  return false;
+}
+
+function CaminoFleury(c_original, v, c, r, f, path) {
+  //alert("c_o: " + c_original.length + "v: " + v.length + " c: " + c.length + " r: " + r + " f: " + f + " p: " + path.length);
+  //var path_clone = path;
+  for (var i = 0; i < c.length; i++) {
+    if (c[i].salida !== r) {
+      continue;
+    }
+    ///alert("Conexion: " + JSON.stringify(c[i]));
+    //alert("path: " +  + "f: " + f)
+    //c[i].llegada === f &&
+
+    if (c.length === (2)) {
+      var p_c = path;
+      //alert("Success");
+      p_c.push(c[i]);
+      //alert("Finishing blow is: " + JSON.stringify(c[i]));
+      return p_c;
+    } else {
+      var path_clone = path.slice();
+      var c_clone = c;
+      var v_clone = v;
+      //alert("1ST  CLONE: "+path_clone.length+" PATH: "+path.length);
+      c_clone = c_clone.filter(function(item) {
+        //eliminamos esta conexion, y si la tiene, su inversa
+        return (item.salida !== c[i].salida || item.llegada !== c[i].llegada) && (item.salida !== c[i].llegada || item.llegada !== c[i].salida);
+      });
+      v_clone = v_clone.filter(function(item) {
+        return item.id !== r;
+      });
+
+      path_clone.push(c[i]);
+      //alert("2ND  CLONE: "+path_clone.length+" PATH: "+path.length);
+      var res = CaminoFleury(c_original, v_clone, c_clone, c[i].llegada, f, path_clone);
+      //alert("res: " + (res !== false));
+      if (res !== false) {
+        //alert("Escalado!!:  " + JSON.stringify(c[i]));
+        return res;
+      }
+    }
+  }
+  return false;
+}
+
 
 function parseFleury(res) {
   //alert(JSON.stringify(res[res.length-1]));
@@ -243,9 +308,11 @@ function parseFleury(res) {
     return "false";
   } else {
     for (var i = 0; i < res.length; i++) {
-      msg += res[i].salida + ", ";
+      //msg += "[" + res[i].salida + "," + res[i].llegada + "] ";
+      msg += res[i].salida + " <i class='material-icons  center-align'>trending_flat</i> ";
     }
-    msg+=res[res.length-1].llegada;
+    msg += res[res.length - 1].llegada;
+
   }
   return msg;
 }
