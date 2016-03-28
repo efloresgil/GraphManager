@@ -190,6 +190,12 @@ app.controller('mainCtrl', function($scope) {
     }
     salida.visto = true;
     salida.costo = 0;
+
+    //Quitamos las conexiones circulares, que no os importan para el algorimto
+    c.filter(function(item) {
+      return item.salida !== item.llegada;
+    })
+
     resultado = vecinosDijkstra(v, c, salida, llegada);
     $scope.dijkstra_html = parseDijkstra(resultado, llegada);
   }
@@ -200,34 +206,44 @@ app.controller('mainCtrl', function($scope) {
     var verticeActual;
     var todos_vistos = true;
     var rama_agotada = true;
-    var vecinos_totales;
+    var vecinos_totales = 0;
     var totale_escalados_en_false;
     //Contamos cuantos vecinos tiene el vertice actual
     for (var i = 0; i < c.length; i++) {
+        //alert(JSON.stringify(c[i])+ " no es vecino");
       if (c[i].salida === salida.id) {
+        //alert(JSON.stringify(c[i]) + " Descubrio un vecino!!");
         vecinos_totales++;
         var con = c[i];
-        for (var i = 0; i < v.length; i++) {
-          var ver = v[i];
+        for (var j = 0; j < v.length; j++) {
+          var ver = v[j];
           //Si este es el vérice al que la conexión llega
           //alert("i: " + i);
           if (ver.id === con.llegada) {
             //realmente la rama no importa si ya esta vista y su costo es menor al que podemos ofrecer
-            rama_agotada = rama_agotada && ver.visto && (ver.costo < (salida.costo + con.costo));
-            if (!rama_agotada) {
+            if (!(ver.visto && (ver.costo < (salida.costo + con.costo)))) {
+              rama_agotada = false;
               break;
             }
+            //rama_agotada = rama_agotada && (ver.visto && (ver.costo < (salida.costo + con.costo)));
           }
         }
       }
     } //FIN FOR RAMA AGOTADA
+    //alert(vecinos_totales + " vecinos para " + JSON.stringify(salida));
     if (rama_agotada) {
       //alert("RETURN RAMA AGOTADA");
       return false;
     }
     //Buscamos conexiones que salgan de nuestro vertice salida
     for (var i = 0; i < c.length; i++) {
+      totale_escalados_en_false = 0;
       //alert("Iteracion en i:" + i);
+      //Las conexiones circulares no nos interesan
+      if (c[i].salida === c[i].llegada) {
+        //alert("Circular: " + JSON.stringify(c[i]));
+        continue;
+      }
       //Solo conexiones que salgan del vertice que nos interesa
       if (c[i].salida === salida.id) {
         var con = c[i];
@@ -278,10 +294,10 @@ app.controller('mainCtrl', function($scope) {
                 //alert("RETURN ESCALADO");
                 return res;
               } else {
-                //alert("RETURN FOR TERMINADO, TODOS ESCALADOS");
                 totale_escalados_en_false++;
                 //Si todos los intentos de recursividad se han rendido, hay vértices aislados
                 if (totale_escalados_en_false === vecinos_totales) {
+                  //alert("RETURN FOR TERMINADO, TODOS ESCALADOS");
                   return false;
                 }
               }
