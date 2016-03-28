@@ -124,7 +124,7 @@
         <div id="dijkstraTab" class="col s12 center-align">
           <div class="valign-wrapper row">
             <div class="col s6 center-align">
-              <label >Vértice de Salida</label>
+              <label>Vértice de Salida</label>
               <div class="input-field">
                 <select ng-model="selectedSalidaDij" ng-options="vertice.id for vertice in vertices" id="salidaSelect" class="browser-default">
                   <option value="" disabled selected>Selecciona un Valor</option>
@@ -141,7 +141,10 @@
               </div>
             </div>
           </div>
-          <a ng-click="(dijkstraPath(selectedSalidaDij, selectedLlegadaDij))" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">play_arrow</i>Calcular Ruta</a>
+          <a ng-click="(dijkstraPath(selectedSalidaDij, selectedLlegadaDij, vertices, matriz))" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">play_arrow</i>Calcular Ruta</a>
+          <div id="dijkstraResult" class="" ng-bind-html="dijkstra_html">
+
+          </div>
         </div>
       </div>
     </div>
