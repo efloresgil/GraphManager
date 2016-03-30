@@ -181,7 +181,7 @@ app.controller('mainCtrl', function($scope) {
     var c = conexiones.slice();
     var v = vertices.slice();
     var opciones = [];
-    if (typeof $scope.selectedSalida === "undefined" || typeof $scope.selectedLlegada === "undefined") {
+    if (typeof salida === "undefined" || llegada === "undefined") {
       Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
     } else {
       //inicializo las métricas para la funcion en todos los vértices
@@ -202,9 +202,7 @@ app.controller('mainCtrl', function($scope) {
         return false;
       }
 
-      if (typeof llegada === "undefined" || typeof salida === "undefined") {
-        Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
-      }
+      
 
       resultado = pathfinder(v, c, salida, llegada, opciones);
       $scope.dijkstra_html = parseDijkstra(resultado, salida, llegada, opciones);
@@ -348,7 +346,7 @@ app.controller('mainCtrl', function($scope) {
 
         //otenemos un array con los saltos, pero al reves
         for (var i = 0; i < v.length; i++) {
-          if (v[i].id !== actual.padre) {
+          if (v[i].id === actual.padre) {
             actual = v[i];
           }
         }
@@ -358,7 +356,7 @@ app.controller('mainCtrl', function($scope) {
       for (var i = (orden_inverso.length - 1); i >= 0; i--) {
         //alert("obj: " + );
         msg += orden_inverso[i].id;
-          if (i !== orden_inverso.length - 1) {
+          if (i !== 0) {
             msg += "<i class='material-icons  center-align'>trending_flat</i>";
           }
 
