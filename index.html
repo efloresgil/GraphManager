@@ -141,7 +141,7 @@
               </div>
             </div>
           </div>
-          <a ng-click="(dijkstraPath(selectedSalidaDij, selectedLlegadaDij, vertices, matriz))" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">play_arrow</i>Calcular Ruta</a>
+          <a ng-click="dijkstra_init(selectedSalidaDij, selectedLlegadaDij, vertices, matriz)" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">play_arrow</i>Calcular Ruta</a>
           <div id="dijkstraResult" class="" ng-bind-html="dijkstra_html">
 
           </div>

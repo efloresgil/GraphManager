@@ -176,181 +176,199 @@ app.controller('mainCtrl', function($scope) {
   }
 
   //Dijkstra
-  $scope.dijkstraPath = function(salida, llegada, vertices, conexiones) {
-
-    //alert("Salida: "+JSON.stringify(salida));
+  $scope.dijkstra_init = function(salida, llegada, vertices, conexiones) {
+    //alert("init");
     var c = conexiones.slice();
     var v = vertices.slice();
-    //inicializo las métricas para la funcion en todos los vértices
-    for (var i = 0; i < v.length; i++) {
-      v[i].padre = null;
-      v[i].costo = -1;
-      v[i].visto = false;
-      v[i].iteracion = 0;
+    var opciones = [];
+    if (typeof $scope.selectedSalida === "undefined" || typeof $scope.selectedLlegada === "undefined") {
+      Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
+    } else {
+      //inicializo las métricas para la funcion en todos los vértices
+      for (var i = 0; i < v.length; i++) {
+        v[i].padre = null;
+        v[i].costo = -1;
+        v[i].visto = false;
+        v[i].iteracion = 0;
+      }
+      //inicializo salida
+      salida.visto = true;
+      salida.costo = 0;
+
+      opciones.push(salida);
+
+      if (salida.id === llegada.id) {
+        Materialize.toast("El inicio y el final no pueden ser iguales");
+        return false;
+      }
+
+      if (typeof llegada === "undefined" || typeof salida === "undefined") {
+        Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
+      }
+
+      resultado = pathfinder(v, c, salida, llegada, opciones);
+      $scope.dijkstra_html = parseDijkstra(resultado, salida, llegada, opciones);
     }
-    salida.visto = true;
-    salida.costo = 0;
-
-    //Quitamos las conexiones circulares, que no os importan para el algorimto
-    c.filter(function(item) {
-      return item.salida !== item.llegada;
-    })
-
-    resultado = vecinosDijkstra(v, c, salida, llegada);
-    $scope.dijkstra_html = parseDijkstra(resultado, llegada);
   }
 
-  function vecinosDijkstra(v, c, salida, llegada) {
-    //alert("DJAKSTRA PATHFINDER INICIADO");
-    //alert("c: "+JSON.stringify(c[0]));
-    var verticeActual;
-    var todos_vistos = true;
-    var rama_agotada = true;
-    var vecinos_totales = 0;
-    var totale_escalados_en_false;
-    //Contamos cuantos vecinos tiene el vertice actual
+  function pathfinder(v, c, salida, llegada, opciones) {
+    //alert("PathFinder iniciado");
+    //alert("OPTS:" + opciones.length);
+    while (true) {
+      var best_opt = bestOption(opciones);
+      //alert("Best Option is: " + JSON.stringify(best_opt));
+      var vecinos = getVecinos(best_opt, v, c);
+      //alert("Vecinos encontrados: " + vecinos.length);
+      var vecino;
+      var conexion;
+      for (var i = 0; i < vecinos.length; i++) {
+        vecino = vecinos[i].vecino;
+        conexion = vecinos[i].conexion;
+        //alert("CONEXION: " + JSON.stringify(conexion));
+        if (!vecino.visto) {
+          //alert("No visto aún!!: " + JSON.stringify(vecino));
+          vecino.padre = parseInt(best_opt.id, 10);
+          vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(conexion.costo, 10));
+          //alert("Suma: " + salida.costo + "Costo Conexion: " + conexion.costo + " = " + (parseInt(salida.costo, 10) + parseInt(conexion.costo, 10)));
+          vecino.iteracion = best_opt.iteracion + 1;
+          vecino.visto = true;
+
+          //actualizamos como se ve el vertice en el array que vamos a retornar
+          for (var j = 1; j < v.length; j++) {
+            if (v[j].id === vecino.id) {
+              v[j] = vecino;
+            }
+          }
+          opciones.push(vecino); //anadimos la nueva opcion
+        }
+        //Si el costo actual del vertice es mayor que el que nosotros ofrecemos
+        else if (vecino.visto && vecino.costo > (best_opt.costo + conexion.costo)) {
+          //alert("Sobrescrito!!: " + JSON.stringify(vecino));
+          vecino.padre = parseInt(best_opt.id, 10);
+          vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(best_opt.costo, 10));
+          vecino.iteracion = best_opt.iteracion + 1;
+          //actualizamos como se ve el vertice en el array que vamos a retornar
+          for (var j = 1; j < v.length; j++) {
+            if (v[j].id === vecino.id) {
+              v[j] = vecino;
+            }
+          }
+          opciones.push(vecino); //anadimos la nueva opcion
+        } else {
+          //alert("Else!!: " + JSON.stringify(vecino));
+          continue;
+        }
+
+      } //for each neighbor
+      //sacamos la opcion que acabamos de procesar de la pila
+      opciones = opciones.filter(function(item) {
+        return item.id !== best_opt.id;
+      });
+      //cuando todas las opciones posibles se agotan, estamos listos
+      if (opciones.length === 0) {
+        //alert("Break");
+        break;
+      }
+    } //while true
+    //retornamos los vertices ya actualizados
+    return v;
+  } //pathfinder
+
+
+  function bestOption(opciones) {
+    var mejor = opciones[0];
+    var actual = {};
+    for (var i = 1; i < opciones.length; i++) {
+      actual = opciones[i];
+      if (actual.costo < mejor.costo) {
+        mejor = actual;
+      } //if
+    } //for
+    return mejor;
+  } //func
+
+
+  function getVecinos(vertice, v, c) {
+    var con;
+    var ver;
+    var vecinos = [];
     for (var i = 0; i < c.length; i++) {
-        //alert(JSON.stringify(c[i])+ " no es vecino");
-      if (c[i].salida === salida.id) {
-        //alert(JSON.stringify(c[i]) + " Descubrio un vecino!!");
-        vecinos_totales++;
-        var con = c[i];
+      con = c[i];
+      //solo conecciones que salen del vertice que nos importa
+      if (con.salida === vertice.id) {
         for (var j = 0; j < v.length; j++) {
-          var ver = v[j];
-          //Si este es el vérice al que la conexión llega
-          //alert("i: " + i);
+          ver = v[j];
+          //si es vecino, osea la conexion actual desemboca aqui
           if (ver.id === con.llegada) {
-            //realmente la rama no importa si ya esta vista y su costo es menor al que podemos ofrecer
-            if (!(ver.visto && (ver.costo < (salida.costo + con.costo)))) {
-              rama_agotada = false;
-              break;
-            }
-            //rama_agotada = rama_agotada && (ver.visto && (ver.costo < (salida.costo + con.costo)));
+            vecinos.push({
+              "vecino": ver,
+              "conexion": con
+            });
           }
         }
       }
-    } //FIN FOR RAMA AGOTADA
-    //alert(vecinos_totales + " vecinos para " + JSON.stringify(salida));
-    if (rama_agotada) {
-      //alert("RETURN RAMA AGOTADA");
-      return false;
     }
-    //Buscamos conexiones que salgan de nuestro vertice salida
-    for (var i = 0; i < c.length; i++) {
-      totale_escalados_en_false = 0;
-      //alert("Iteracion en i:" + i);
-      //Las conexiones circulares no nos interesan
-      if (c[i].salida === c[i].llegada) {
-        //alert("Circular: " + JSON.stringify(c[i]));
-        continue;
-      }
-      //Solo conexiones que salgan del vertice que nos interesa
-      if (c[i].salida === salida.id) {
-        var con = c[i];
-        for (var j = 0; j < v.length; j++) {
-          //alert("Iteracion en j:" + j);
-          //Si este es el vérice al que la conexión llega
-          if (v[j].id === con.llegada) {
-            verticeActual = v[j];
-            //Si el vértice aún no ha sido visto
-            if (!verticeActual.visto) {
-              //alert("No visto aún!!: " + JSON.stringify(verticeActual));
-              verticeActual.padre = parseInt(salida.id, 10);
-              verticeActual.costo = (parseInt(salida.costo, 10) + parseInt(con.costo, 10));
-              verticeActual.iteracion = salida.iteracion + 1;
-              verticeActual.visto = true;
-            }
-            //Si el costo actual del vertice es mayor que el que nosotros ofrecemos
-            else if (verticeActual.visto && verticeActual.costo > (salida.costo + con.costo)) {
-              //alert("Sobrescrito!!: " + JSON.stringify(verticeActual));
-              verticeActual.padre = parseInt(salida.id, 10);
-              verticeActual.costo = (parseInt(salida.costo, 10) + parseInt(con.costo, 10));
-              verticeActual.iteracion = salida.iteracion + 1;
-            } else {
-              //alert("Else!!: " + JSON.stringify(verticeActual));
-              continue;
-            }
-            //nos fijamos si ya todos salen como visto
-            for (var k = 0; k < v.length; k++) {
-              todos_vistos = todos_vistos && v[k].visto;
-              if (!todos_vistos) {
-                //alert("NOT TODOS VISTOS");
-                break;
-              }
-            }
-            //Si todos están vistos, ya terminamos
-            if (todos_vistos || verticeActual.id === llegada.id) {
-              //alert("RETURN SUCCESSFUL");
-              return {
-                "v": v,
-                "c": c
-              }
-            }
-            //sino
-            else {
-              res = vecinosDijkstra(v, c, verticeActual, llegada);
-              //Si res es falso, la rama se quedo sin vetices a los que ir que no estuvieran visitados
-              if (res !== false) {
-                //alert("RETURN ESCALADO");
-                return res;
-              } else {
-                totale_escalados_en_false++;
-                //Si todos los intentos de recursividad se han rendido, hay vértices aislados
-                if (totale_escalados_en_false === vecinos_totales) {
-                  //alert("RETURN FOR TERMINADO, TODOS ESCALADOS");
-                  return false;
-                }
-              }
-            }
-          }
-        }
-      }
-    } //FIN FOR PRINCIPAL
-    return false;
-  }
+    return vecinos;
+  } //func
 
-  function parseDijkstra(res, final) {
-    var final;
-    var path = [];
-    if (res === false) {
-      return "Los vértices están aislados, no existe una ruta que los conecte"
-    }
-    var vertice_final;
-    for (var i = 0; i < res.v.length; i++) {
-      if (res.v[i].id === final.id) {
-        vertice_final = res.v[i];
-      }
-    }
-    path = ordenarArray(res.v, vertice_final, []);
-    //alert("PATH: "+path.length)
+  function parseDijkstra(resultado, salida, llegada, opciones) {
+    //alert("Resultado:" + resultado.length);
+    var final = {};
+    var actual;
+    var orden_inverso = [];
+    var orden_correcto = [];
+    var v = resultado.slice();
+    //alert("V:" + resultado.length);
     var msg = "";
-    msg += "Costo total: " + vertice_final.costo + "<br/>";
-    msg += "Saltos totales: " + vertice_final.iteracion + "<br/> <br/>";
-    msg += "La ruta es: ";
-    //path es un array con el orden al reves, vamos de final a inicio,y omitomos el primero de la lisa
-    //para meterlo SIN la flecha el final
-    for (var i = path.length - 1; i >= 1; i--) {
-      msg += path[i].id + " <i class='material-icons  center-align'>trending_flat</i>";
-    }
-    msg += path[0].id;
-    return msg;
-  }
 
-  function ordenarArray(v, vertice_actual, array) {
-    //alert("Actual: "+JSON.stringify(vertice_actual));
-    array.push(vertice_actual);
-    if (vertice_actual.padre === null) {
-
-      return array;
-    }
+    //alert("Llegada: " + JSON.stringify(llegada));
     for (var i = 0; i < v.length; i++) {
-      if (v[i].id === vertice_actual.padre) {
-        //alert("WE HAVE TO GO DEEPER!");
-        return ordenarArray(v, v[i], array)
+      if (v[i].id === llegada.id) {
+        final = v[i];
+        actual = final;
       }
     }
-  }
 
+    //alert("FINAL: " + JSON.stringify(final));
+
+    if (final.costo < 0) {
+      return "Los vértices están aislados, no exite un camino que los conecte."
+    } else {
+      msg += "Costo total: " + final.costo + "<br/>";
+      msg += "Saltos totales: " + final.iteracion + "<br/> <br/>";
+      msg += "La ruta es: ";
+
+      while (true) {
+        //alert("PUSH: " + JSON.stringify(actual));
+        orden_inverso.push(actual);
+
+        if (actual.padre === null) {
+          break;
+        }
+
+        //otenemos un array con los saltos, pero al reves
+        for (var i = 0; i < v.length; i++) {
+          if (v[i].id !== actual.padre) {
+            actual = v[i];
+          }
+        }
+      } //While
+
+      //recorremos el array al reves para armar el string
+      for (var i = (orden_inverso.length - 1); i >= 0; i--) {
+        //alert("obj: " + );
+        msg += orden_inverso[i].id;
+          if (i !== orden_inverso.length - 1) {
+            msg += "<i class='material-icons  center-align'>trending_flat</i>";
+          }
+
+      }
+      return msg;
+    } //Else
+  } //Func
+
+
+  //Euleriano
   function calcularEuleriano() {
     var pares = [];
     var inpares = [];
