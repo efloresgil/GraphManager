@@ -227,7 +227,8 @@ app.controller('mainCtrl', function($scope) {
           //alert("No visto aún!!: " + JSON.stringify(vecino));
           vecino.padre = parseInt(best_opt.id, 10);
           vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(conexion.costo, 10));
-          //alert("Suma: " + salida.costo + "Costo Conexion: " + conexion.costo + " = " + (parseInt(salida.costo, 10) + parseInt(conexion.costo, 10)));
+          //alert("NUEVO COSTO ES: " + vecino.costo);
+          //alert("Salida: " + salida.costo + "Costo Conexion: " + conexion.costo + " = " + (parseInt(salida.costo, 10) + parseInt(conexion.costo, 10)));
           vecino.iteracion = best_opt.iteracion + 1;
           vecino.visto = true;
 
@@ -240,10 +241,10 @@ app.controller('mainCtrl', function($scope) {
           opciones.push(vecino); //anadimos la nueva opcion
         }
         //Si el costo actual del vertice es mayor que el que nosotros ofrecemos
-        else if (vecino.visto && vecino.costo > (best_opt.costo + conexion.costo)) {
+        else if (vecino.visto && vecino.costo > (parseInt(best_opt.costo) + parseInt(conexion.costo))) {
           //alert("Sobrescrito!!: " + JSON.stringify(vecino));
           vecino.padre = parseInt(best_opt.id, 10);
-          vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(best_opt.costo, 10));
+          vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(conexion.costo, 10));
           vecino.iteracion = best_opt.iteracion + 1;
           //actualizamos como se ve el vertice en el array que vamos a retornar
           for (var j = 1; j < v.length; j++) {
