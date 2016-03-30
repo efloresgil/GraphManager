@@ -349,6 +349,7 @@ app.controller('mainCtrl', function($scope) {
         for (var i = 0; i < v.length; i++) {
           if (v[i].id === actual.padre) {
             actual = v[i];
+            break;
           }
         }
       } //While
