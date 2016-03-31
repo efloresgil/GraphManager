@@ -4,7 +4,7 @@ $scope.dijkstra_init = function(salida, llegada, vertices, conexiones) {
   var c = conexiones.slice();
   var v = vertices.slice();
   var opciones = [];
-  if (typeof $scope.selectedSalida === "undefined" || typeof $scope.selectedLlegada === "undefined") {
+  if (typeof salida === "undefined" || llegada === "undefined") {
     Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
   } else {
     //inicializo las métricas para la funcion en todos los vértices
@@ -25,9 +25,7 @@ $scope.dijkstra_init = function(salida, llegada, vertices, conexiones) {
       return false;
     }
 
-    if (typeof llegada === "undefined" || typeof salida === "undefined") {
-      Materialize.toast("Selecciona los vértices de salida y llegada", 3000);
-    }
+
 
     resultado = pathfinder(v, c, salida, llegada, opciones);
     $scope.dijkstra_html = parseDijkstra(resultado, salida, llegada, opciones);
@@ -52,7 +50,8 @@ function pathfinder(v, c, salida, llegada, opciones) {
         //alert("No visto aún!!: " + JSON.stringify(vecino));
         vecino.padre = parseInt(best_opt.id, 10);
         vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(conexion.costo, 10));
-        //alert("Suma: " + salida.costo + "Costo Conexion: " + conexion.costo + " = " + (parseInt(salida.costo, 10) + parseInt(conexion.costo, 10)));
+        //alert("NUEVO COSTO ES: " + vecino.costo);
+        //alert("Salida: " + salida.costo + "Costo Conexion: " + conexion.costo + " = " + (parseInt(salida.costo, 10) + parseInt(conexion.costo, 10)));
         vecino.iteracion = best_opt.iteracion + 1;
         vecino.visto = true;
 
@@ -65,10 +64,10 @@ function pathfinder(v, c, salida, llegada, opciones) {
         opciones.push(vecino); //anadimos la nueva opcion
       }
       //Si el costo actual del vertice es mayor que el que nosotros ofrecemos
-      else if (vecino.visto && vecino.costo > (best_opt.costo + conexion.costo)) {
+      else if (vecino.visto && vecino.costo > (parseInt(best_opt.costo) + parseInt(conexion.costo))) {
         //alert("Sobrescrito!!: " + JSON.stringify(vecino));
         vecino.padre = parseInt(best_opt.id, 10);
-        vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(best_opt.costo, 10));
+        vecino.costo = (parseInt(best_opt.costo, 10) + parseInt(conexion.costo, 10));
         vecino.iteracion = best_opt.iteracion + 1;
         //actualizamos como se ve el vertice en el array que vamos a retornar
         for (var j = 1; j < v.length; j++) {
@@ -171,8 +170,9 @@ function parseDijkstra(resultado, salida, llegada, opciones) {
 
       //otenemos un array con los saltos, pero al reves
       for (var i = 0; i < v.length; i++) {
-        if (v[i].id !== actual.padre) {
+        if (v[i].id === actual.padre) {
           actual = v[i];
+          break;
         }
       }
     } //While
@@ -181,9 +181,9 @@ function parseDijkstra(resultado, salida, llegada, opciones) {
     for (var i = (orden_inverso.length - 1); i >= 0; i--) {
       //alert("obj: " + );
       msg += orden_inverso[i].id;
-        if (i !== orden_inverso.length - 1) {
-          msg += "<i class='material-icons  center-align'>trending_flat</i>";
-        }
+      if (i !== 0) {
+        msg += "<i class='material-icons  center-align'>trending_flat</i>";
+      }
 
     }
     return msg;
