@@ -44,7 +44,7 @@ app.controller('mainCtrl', function($scope) {
   }
 
   function nextID() {
-    var mayor = 1;
+    var mayor = 0;
     for (i = 0; i < $scope.vertices.length; i++) {
       var vertice = $scope.vertices[i];
       if (mayor < vertice.id) {
@@ -158,6 +158,15 @@ app.controller('mainCtrl', function($scope) {
     });
   }
 
+  $scope.resetVertices = function() {
+      $scope.vertices = [];
+      $scope.resetConexiones();
+  }
+
+  $scope.resetConexiones = function() {
+      $scope.matriz = [];
+  }
+
   $scope.eliminarConexion = function(conexion) {
     //alert(id);
     var circular = conexion.salida === conexion.llegada;
@@ -202,7 +211,7 @@ app.controller('mainCtrl', function($scope) {
         return false;
       }
 
-      
+
 
       resultado = pathfinder(v, c, salida, llegada, opciones);
       $scope.dijkstra_html = parseDijkstra(resultado, salida, llegada, opciones);
@@ -358,9 +367,9 @@ app.controller('mainCtrl', function($scope) {
       for (var i = (orden_inverso.length - 1); i >= 0; i--) {
         //alert("obj: " + );
         msg += orden_inverso[i].id;
-          if (i !== 0) {
-            msg += "<i class='material-icons  center-align'>trending_flat</i>";
-          }
+        if (i !== 0) {
+          msg += "<i class='material-icons  center-align'>trending_flat</i>";
+        }
 
       }
       return msg;

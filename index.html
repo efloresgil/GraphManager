@@ -58,12 +58,18 @@
             <input id="costo" type="number" class="validate">
             <label for="costo">Costo</label>
           </div>
-          <div class="col s2">
+        </div>
+        <div class="valign-wrapper">
+
+          <div class="col s12 btn-margin">
             <input ng-model="bidireccional" ng-checked="bidireccional" type="checkbox" id="bidireccional" />
             <label for="bidireccional">Bidireccional</label>
           </div>
         </div>
-        <a ng-click="nuevaConexion()" id="addConBtn" class="btn-margin waves-effect waves-light btn"><i class="material-icons left">add</i>Nueva Conexión</a>
+
+        <a ng-click="nuevaConexion()" id="addConBtn" class="btn-margin waves-effect waves-light btn">
+          <i class="material-icons left">add</i>Nueva Conexión
+        </a>
       </div>
     </div>
 
@@ -78,6 +84,15 @@
           </ul>
         </div>
         <div id="grafosTab" class="col s12">
+          
+            <div class="row center-align">
+              <div class="col s12 btn-margin">
+                <a ng-click="resetVertices()" id="" class="btn-margin btn-flat waves-effect">
+                  <i class="material-icons left">delete</i>Borrar Todos
+                </a>
+              </div>
+            </div>
+
           <ul class="collection">
             <h1 class="center-align" ng-if="vertices.length==0">No hay vértices...</h1>
             <li ng-repeat="vertice in vertices track by vertice.id" class="collection-item avatar">
@@ -89,12 +104,21 @@
               <p>
                 Grado: {{vertice.grado}}
               </p>
-              <a ng-click="eliminarVertice(vertice.id)" href="#!" class="secondary-content"><i class="material-icons text-red small">delete</i></a>
+              <a ng-click="eliminarVertice(vertice.id)" href="#!" class="secondary-content">
+                <i class="material-icons text-red small">delete</i>
+              </a>
             </li>
           </ul>
         </div>
 
         <div id="conexionesTab" class="col s12">
+          <div class="row center-align">
+            <div class="col s12 btn-margin">
+              <a ng-click="resetConexiones()" id="" class="btn-margin btn-flat waves-effect">
+                <i class="material-icons left">delete</i>Borrar Todas
+              </a>
+            </div>
+          </div>
           <ul class="collection">
             <h1 class="center-align" ng-if="matriz.length==0">No hay conexiones...</h1>
             <li ng-if="matriz.length!=0" ng-repeat="conexion in matriz" class="collection-item valign-wrapper">
