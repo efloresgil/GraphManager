@@ -7,6 +7,8 @@ app.controller('mainCtrl', function($scope) {
     "grado": 0
   };
   //variables del scope principal
+  //yes
+  $scope.hw = null;
   $scope.matriz = [];
   $scope.vertices = [first];
   $scope.NOEULER = "Grafo No Euleriano, no Semieuleriano";
@@ -159,12 +161,12 @@ app.controller('mainCtrl', function($scope) {
   }
 
   $scope.resetVertices = function() {
-      $scope.vertices = [];
-      $scope.resetConexiones();
+    $scope.vertices = [];
+    $scope.resetConexiones();
   }
 
   $scope.resetConexiones = function() {
-      $scope.matriz = [];
+    $scope.matriz = [];
   }
 
   $scope.eliminarConexion = function(conexion) {
