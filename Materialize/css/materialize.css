@@ -8473,7 +8473,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 ul.collection li h5 {
   margin: 0px; }
 
-#dijkstraBtn {
+#dijkstraBtn, #KruskalBtn {
   margin-bottom: 1rem; }
 
 #dijkstraTab .row {

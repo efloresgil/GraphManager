@@ -1,6 +1,6 @@
 var app = angular.module("GraphManager", ['ngSanitize']);
 
-app.controller('mainCtrl', function($scope) {
+app.controller('mainCtrl', function($scope, $filter) {
   var first = {
     "id": 1,
     "color": "#eee",
@@ -64,7 +64,7 @@ app.controller('mainCtrl', function($scope) {
   Celda = function(salida, llegada, costo) {
     this.salida = salida;
     this.llegada = llegada;
-    this.costo = costo;
+    this.costo = parseInt(costo, 10);
   }
 
   //SCOPE variables y funciones
@@ -378,6 +378,199 @@ app.controller('mainCtrl', function($scope) {
     } //Else
   } //Func
 
+  //KRUSKAL
+  $scope.kruskal_init = function(vertices, conexiones, minimo) {
+    var pares = [];
+    var inpares = [];
+    var ceros = [];
+    for (var i = 0; i < $scope.vertices.length; i++) {
+      //total += $scope.vertices[i].grado;
+      if (($scope.vertices[i].grado % 2) !== 0) {
+        inpares.push($scope.vertices[i]);
+      } else if ($scope.vertices[i].grado !== 0) {
+        pares.push($scope.vertices[i]);
+      } else {
+        ceros.push($scope.vertices[i])
+      }
+    }
+
+    if (ceros.length !== 0) {
+      Materialize.toast("Hay vértices desconectados!", 3000);
+      return false;
+    }
+
+
+    var v = vertices.slice();
+    var c = conexiones.slice();
+    var capa = 0;
+    var saltos = 0;
+    var n = v.length;
+    var escogidos = [];
+    var arbol = [];
+    var hijos = [];
+    var mejor_con = {};
+    var llegada = {};
+    var salida = {};
+    var inversa = {};
+    var primero = {};
+
+
+    for (var i = 0; i < v.length; i++) {
+      var ver = v[i];
+      ver.visto = false;
+    }
+
+    c = c.filter(function(item) {
+      return item.salida !== item.llegada;
+    });
+    c = $filter('orderBy')(c, "costo");
+    //console.log(c);
+
+    mejor_con = getMejorCon(c, minimo);
+    llegada = getVertice(mejor_con.llegada);
+    salida = getVertice(mejor_con.salida);
+    inversa = getInverso(mejor_con);
+
+    escogidos.push(mejor_con);
+
+    //Eliminamos esta y su inversa, si existe
+    c = c.filter(function(item) {
+      if (inversa !== false) {
+        return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada)));
+      } else {
+        return !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada));
+      }
+    });
+
+    salida.visto = true;
+    llegada.visto = true;
+
+    saltos++;
+
+    while (saltos !== (n - 1)) {
+      mejor_con = getMejorCon(c, minimo);
+      llegada = getVertice(mejor_con.llegada);
+      salida = getVertice(mejor_con.salida);
+      inversa = getInverso(mejor_con);
+      if (!llegada.visto) {
+        escogidos.push(mejor_con);
+        llegada.visto = true;
+        saltos++;
+      }
+
+      c = c.filter(function(item) {
+        if (inversa !== false) {
+          return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada)));
+        } else {
+          return !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada));
+        }
+      });
+
+    } //while;
+    //return escogidos;
+    escogidos = $filter('orderBy')(escogidos, "costo");
+    arbol = getArbol(escogidos);
+
+    $scope.arbolKruskal = arbol;
+    console.log(arbol);
+  }
+
+  function getArbol(escogidos) {
+    var salida = {};
+    var llegada = {};
+    var arbol = [];
+    var arbol_hijos = [];
+    var actual = {};
+    var hijos = [];
+    var ramas = [];
+
+
+    while (escogidos.length !== 0) {
+      //estan ordenados por orden y eliminamos a los hijos asi que siempre ocuparemos al 0
+      actual = escogidos[0];
+      salida=getVertice(actual.salida);
+      llegada=getVertice(actual.llegada);
+
+      alert("Actual: " + JSON.stringify(actual));
+
+      hijos = getHijos(actual, escogidos);
+      //quito los hijos de escogidos y el vertice actual
+      escogidos = escogidos.filter(function(item) {
+        return (item.salida !== salida.id) && (item.salida !== actual.salida || item.llegada !== actual.llegada);
+      });
+
+      //aun hay hijos por los que seguir
+      if (hijos.length !== 0) {
+        arbol_hijos = getArbol(hijos);
+        ramas.push(arbol.hijos);
+      }
+    }
+
+    arbol.push({
+      vertice: vertice,
+      hijos: arbol_hijos,
+      ramas: ramas
+    });
+
+    if (arbol.ramas.length === 0) {
+      return arbol;
+    }
+  }
+
+  function getHijos(ver, escogidos) {
+    var hijos = [];
+    for (var i = 0; i < escogidos.length; i++) {
+      var actual = escogidos[i];
+      if (actual.salida === ver.id) {
+        hijos.push(actual);
+      }
+    }
+    return hijos;
+  }
+
+  function getMejorCon(c, minimo) {
+    var mejor = c[0];
+    for (var i = 0; i < c.length; i++) {
+      var con = c[i];
+      if (minimo) {
+        if (mejor.costo > con.costo) {
+          mejor = con;
+        }
+      } else {
+        if (mejor.costo < con.costo) {
+          mejor = con;
+        }
+      }
+    }
+    return mejor;
+  }
+
+  function getVertice(id) {
+    for (var i = 0; i < $scope.vertices.length; i++) {
+      var actual = $scope.vertices[i];
+      if (actual.id === id) {
+        //alert(actual);
+        return actual;
+      }
+    }
+  }
+
+  function getInverso(conexion) {
+    for (var i = 0; i < $scope.matriz.length; i++) {
+      var actual = $scope.matriz[i];
+      if ((actual.salida === conexion.llegada) && (actual.llegada === conexion.salida)) {
+        return actual;
+      }
+    }
+    return false;
+  }
+
+  function parseKruskal(res) {
+    var template = "";
+    var actual = res[0];
+    var hijos = [];
+
+  }
 
   //Euleriano
   function calcularEuleriano() {
