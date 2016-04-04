@@ -1,14 +1,17 @@
 angular.module("app")
-  .drective("KruskalTree", ["$complie", function($complie) {
+  .drective("kruskalRoot", ["$complie", function($complie) {
     return {
       restrict: 'E',
-      scope:{},
+      scope: {},
+      bindToController: {
+        nodo: '@'
+      },
       link: function($scope, $element) {
-          var template = "";
-          if ($scope.KruskalTree===[]) {
-            return false;
-          }
-          var primero=
+        var template = "<ul><li>";
+        if ($scope.KruskalTree === []) {
+          return false;
+        }
+        var primero =
       }, //LINK
 
     }; //RETURN

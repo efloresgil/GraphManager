@@ -423,7 +423,11 @@ app.controller('mainCtrl', function($scope, $filter) {
     c = c.filter(function(item) {
       return item.salida !== item.llegada;
     });
-    c = $filter('orderBy')(c, "costo");
+    if (minimo) {
+      c = $filter('orderBy')(c, "costo");
+    } else {
+      c = $filter('orderBy')(c, "-costo");
+    }
     //console.log(c);
 
     mejor_con = getMejorCon(c, minimo);
@@ -434,13 +438,17 @@ app.controller('mainCtrl', function($scope, $filter) {
     escogidos.push(mejor_con);
 
     //Eliminamos esta y su inversa, si existe
+    //alert("b4 LENGTH: " + c.length);
     c = c.filter(function(item) {
       if (inversa !== false) {
+        //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada))));
         return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada)));
       } else {
+        //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)));
         return !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada));
       }
     });
+    //alert("AFTER: " + c.length + "SALTOS: " + saltos);
 
     salida.visto = true;
     llegada.visto = true;
@@ -448,34 +456,46 @@ app.controller('mainCtrl', function($scope, $filter) {
     saltos++;
 
     while (saltos !== (n - 1)) {
+
       mejor_con = getMejorCon(c, minimo);
+      //alert("MEJOR_CON: " + JSON.stringify(mejor_con));
       llegada = getVertice(mejor_con.llegada);
       salida = getVertice(mejor_con.salida);
       inversa = getInverso(mejor_con);
+      //alert("LLEGADA: " + JSON.stringify(llegada));
       if (!llegada.visto) {
         escogidos.push(mejor_con);
         llegada.visto = true;
         saltos++;
+        //alert("SALTOS++");
       }
-
+      //alert("b4 LENGTH: " + c.length);
       c = c.filter(function(item) {
         if (inversa !== false) {
+          //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada))));
           return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada)));
         } else {
+          //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)));
           return !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada));
         }
       });
-
+      //alert("AFTER: " + c.length + "SALTOS: " + saltos);
+      //alert("SALTOS: " + saltos);
     } //while;
     //return escogidos;
-    escogidos = $filter('orderBy')(escogidos, "costo");
-    arbol = getArbol(escogidos);
+    if (minimo) {
+      escogidos = $filter('orderBy')(escogidos, "costo");
+    } else {
+      escogidos = $filter('orderBy')(escogidos, "-costo");
+    }
+    //alert("Retun escogidos: " + escogidos.length);
+    arbol = getArbol(escogidos, escogidos);
 
     $scope.arbolKruskal = arbol;
     console.log(arbol);
   }
 
-  function getArbol(escogidos) {
+  function getArbol(escogidos, c_original) {
     var salida = {};
     var llegada = {};
     var arbol = [];
@@ -483,45 +503,90 @@ app.controller('mainCtrl', function($scope, $filter) {
     var actual = {};
     var hijos = [];
     var ramas = [];
+    var hijosFull=[0];
 
-
+    escogidos = escogidos.slice();
     while (escogidos.length !== 0) {
       //estan ordenados por orden y eliminamos a los hijos asi que siempre ocuparemos al 0
+      //alert("Escogidos: " + escogidos.length);
       actual = escogidos[0];
-      salida=getVertice(actual.salida);
-      llegada=getVertice(actual.llegada);
+      salida = getVertice(actual.salida);
+      llegada = getVertice(actual.llegada);
 
-      alert("Actual: " + JSON.stringify(actual));
+      //alert("Actual: " + JSON.stringify(actual));
 
-      hijos = getHijos(actual, escogidos);
-      //quito los hijos de escogidos y el vertice actual
+      hijos = getHijos(actual, c_original);
+      hijosFull=getHijosFull(hijos);
+
+
+      for (var i = 0; i < hijos.length; i++) {
+        hijos[i].tienePadre = true;
+      }
+      //alert(JSON.stringify(actual) + " tiene " + hijos.length + " hijos ");
+      //quito los hijos de escogidos y el actual
       escogidos = escogidos.filter(function(item) {
-        return (item.salida !== salida.id) && (item.salida !== actual.salida || item.llegada !== actual.llegada);
+        return (item.salida !== llegada.id) && (item.salida !== actual.salida || item.llegada !== actual.llegada) && !isHijo(item, hijosDeep);
       });
+      //alert("Escogidos: " + escogidos.length);
+
 
       //aun hay hijos por los que seguir
       if (hijos.length !== 0) {
-        arbol_hijos = getArbol(hijos);
+        arbol_hijos = getArbol(hijos, c_original);
         ramas.push(arbol.hijos);
       }
+
+      arbol.push({
+        conexion: actual,
+        vertice: salida,
+        hijos: arbol_hijos,
+        ramas: ramas
+      });
     }
 
-    arbol.push({
-      vertice: vertice,
-      hijos: arbol_hijos,
-      ramas: ramas
-    });
 
+    return arbol;
     if (arbol.ramas.length === 0) {
       return arbol;
     }
+  }
+
+  function getHijosFull(ver, escogidos) {
+    var hijosTotal = [];
+    var hijos = getHijos(ver, escogidos);
+    var hijosDeep = [];
+    for (var i = 0; i < hijos.length; i++) {
+      hijosDeep.push(getHijosFull(hijos[i], escogidos));
+    }
+    for (var i = 0; i < hijosDeep.length; i++) {
+      var actual = hijosDeep[i];
+      for (var i = 0; j < actual.length; j++) {
+        hijosTotal.push(actual[j]);
+      }
+      //hijosDeep[i];
+    }
+    return hijosTotal;
+  }
+
+  function isHijo(conexion, hijos) {
+    for (var i = 0; i < hijos.length; i++) {
+      var actual = hijos[i];
+      if (actual.salida === conexion.salida && actual.llegada===conexion.llegada) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function getHijos(ver, escogidos) {
     var hijos = [];
     for (var i = 0; i < escogidos.length; i++) {
       var actual = escogidos[i];
-      if (actual.salida === ver.id) {
+      var llegada = getVertice(actual.llegada);
+      var salida = getVertice(actual.salida);
+
+      if ((actual.salida === ver.llegada) && !actual.tienePadre) {
+        actual.tienePadre = true;
         hijos.push(actual);
       }
     }
