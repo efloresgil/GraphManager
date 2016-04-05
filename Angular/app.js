@@ -524,7 +524,7 @@ app.controller('mainCtrl', function($scope, $filter) {
 
 
       for (var i = 0; i < hijos.length; i++) {
-        hijos[i].tienePadre = true;
+        hijosFull.push(hijos[i]);
       }
       //alert(JSON.stringify(actual) + " tiene " + hijos.length + " hijos ");
       //quito los hijos de escogidos y el actual
@@ -538,6 +538,9 @@ app.controller('mainCtrl', function($scope, $filter) {
       if (hijos.length !== 0) {
         arbol_hijos = getArbol(hijos, c_original);
         ramas.push(arbol.hijos);
+      }
+      else {
+        arbol_hijos=[];
       }
 
       arbol.push({
