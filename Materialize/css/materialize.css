@@ -8482,7 +8482,7 @@ ul.collection li h5 {
 #dijkstraResult {
   font-size: xx-large; }
 
-ul#KruskalTree {
-  padding: !important; }
+ul#KruskalTree li {
+  padding-left: 3rem !important; }
 
 /*# sourceMappingURL=materialize.css.map */
