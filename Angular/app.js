@@ -503,7 +503,7 @@ app.controller('mainCtrl', function($scope, $filter) {
     var actual = {};
     var hijos = [];
     var ramas = [];
-    var hijosFull=[0];
+    var hijosFull = [0];
 
     escogidos = escogidos.slice();
     while (escogidos.length !== 0) {
@@ -516,7 +516,11 @@ app.controller('mainCtrl', function($scope, $filter) {
       //alert("Actual: " + JSON.stringify(actual));
 
       hijos = getHijos(actual, c_original);
-      hijosFull=getHijosFull(hijos);
+      if (hijos.length !== 0) {
+        hijosFull = getHijosFull(hijos, escogidos);
+      } else {
+        hijosFull = [];
+      }
 
 
       for (var i = 0; i < hijos.length; i++) {
@@ -525,7 +529,7 @@ app.controller('mainCtrl', function($scope, $filter) {
       //alert(JSON.stringify(actual) + " tiene " + hijos.length + " hijos ");
       //quito los hijos de escogidos y el actual
       escogidos = escogidos.filter(function(item) {
-        return (item.salida !== llegada.id) && (item.salida !== actual.salida || item.llegada !== actual.llegada) && !isHijo(item, hijosDeep);
+        return (item.salida !== llegada.id) && (item.salida !== actual.salida || item.llegada !== actual.llegada) && !isHijo(item, hijosFull);
       });
       //alert("Escogidos: " + escogidos.length);
 
@@ -553,25 +557,39 @@ app.controller('mainCtrl', function($scope, $filter) {
 
   function getHijosFull(ver, escogidos) {
     var hijosTotal = [];
-    var hijos = getHijos(ver, escogidos);
+    var hijos =[];
     var hijosDeep = [];
+
+    for (var i = 0; i < ver.length; i++) {
+      hijos.push(getHijos(ver[i], escogidos));
+    }
+
     for (var i = 0; i < hijos.length; i++) {
       hijosDeep.push(getHijosFull(hijos[i], escogidos));
     }
     for (var i = 0; i < hijosDeep.length; i++) {
       var actual = hijosDeep[i];
-      for (var i = 0; j < actual.length; j++) {
+      for (var j = 0; j < actual.length; j++) {
         hijosTotal.push(actual[j]);
       }
       //hijosDeep[i];
     }
+
+    for (var i = 0; i < hijos.length; i++) {
+      var actual = hijos[i];
+      for (var j = 0; j < actual.length; j++) {
+        hijosTotal.push(actual[j]);
+      }
+      //hijosDeep[i];
+    }
+
     return hijosTotal;
   }
 
   function isHijo(conexion, hijos) {
     for (var i = 0; i < hijos.length; i++) {
       var actual = hijos[i];
-      if (actual.salida === conexion.salida && actual.llegada===conexion.llegada) {
+      if (actual.salida === conexion.salida && actual.llegada === conexion.llegada) {
         return true;
       }
     }
@@ -585,7 +603,7 @@ app.controller('mainCtrl', function($scope, $filter) {
       var llegada = getVertice(actual.llegada);
       var salida = getVertice(actual.salida);
 
-      if ((actual.salida === ver.llegada) && !actual.tienePadre) {
+      if ((actual.salida === ver.llegada)) {
         actual.tienePadre = true;
         hijos.push(actual);
       }
