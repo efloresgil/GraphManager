@@ -468,17 +468,22 @@ app.controller('mainCtrl', function($scope, $filter) {
         llegada.visto = true;
         saltos++;
         //alert("SALTOS++");
+        c = c.filter(function(item) {
+          if (inversa !== false) {
+            //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada))));
+            return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada)));
+          } else {
+            //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)));
+            return !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada));
+          }
+        });
+      } else {
+        c = c.filter(function(item) {
+          return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)));
+        });
       }
       //alert("b4 LENGTH: " + c.length);
-      c = c.filter(function(item) {
-        if (inversa !== false) {
-          //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada))));
-          return !(((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)) || ((item.llegada === mejor_con.salida) && (item.salida === mejor_con.llegada)));
-        } else {
-          //alert("MEJOR_CON: " + JSON.stringify(mejor_con) + "A FILTRAR: " + JSON.stringify(item) + " FILTRADO: " + !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada)));
-          return !((item.salida === mejor_con.salida) && (item.llegada === mejor_con.llegada));
-        }
-      });
+
       //alert("AFTER: " + c.length + "SALTOS: " + saltos);
       //alert("SALTOS: " + saltos);
     } //while;
@@ -538,9 +543,8 @@ app.controller('mainCtrl', function($scope, $filter) {
       if (hijos.length !== 0) {
         arbol_hijos = getArbol(hijos, c_original);
         ramas.push(arbol.hijos);
-      }
-      else {
-        arbol_hijos=[];
+      } else {
+        arbol_hijos = [];
       }
 
       arbol.push({
@@ -560,7 +564,7 @@ app.controller('mainCtrl', function($scope, $filter) {
 
   function getHijosFull(ver, escogidos) {
     var hijosTotal = [];
-    var hijos =[];
+    var hijos = [];
     var hijosDeep = [];
 
     for (var i = 0; i < ver.length; i++) {
