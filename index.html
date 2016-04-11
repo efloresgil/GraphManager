@@ -203,9 +203,25 @@
             <span class="center-align">
               <a ng-click="dijkstra_init(selectedSalidaDij, selectedLlegadaDij, vertices, matriz)" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
                 <i class="material-icons left">play_arrow</i>Dijkstra</a>
-              <a ng-click="kruskal_init(vertices, matriz, true)" id="KruskalBtn" class="btn-margin waves-effect waves-light btn">
+              <a ng-click="kruskal_init(vertices, matriz, minimoKruskal)" id="KruskalBtn" class="btn-margin waves-effect waves-light btn">
                 <i class="material-icons left">play_arrow</i>Kruskal</a>
             </span>
+
+            <div class="valign-wrapper">
+
+              <div class="col s12 btn-margin">
+                <!-- Switch -->
+                <div class="switch">
+                  <label>
+                    Máximo
+                    <input type="checkbox" ng-model="minimoKruskal">
+                    <span class="lever"></span>
+                    Mínimo
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div id="dijkstraResult" class="" ng-bind-html="dijkstra_html"></div>
 
             <h3 ng-if="arbolKruskal">Árbol de expansión Kruskal</h3>
