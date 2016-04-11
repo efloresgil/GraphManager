@@ -24,6 +24,8 @@ app.controller('mainCtrl', function($scope, $filter) {
 
       $scope.DijkstraActivo = false;
       $scope.KruskalActivo = false;
+
+      $scope.minimoKruskal=true;
       //variables
       function calcularGrado(vertice) {
         var grado;
@@ -198,6 +200,9 @@ app.controller('mainCtrl', function($scope, $filter) {
         $scope.resetConexiones = function() {
           $scope.matriz = [];
           $scope.arbolKruskal=[];
+          for (var i = 0; i < $scope.vertices.length; i++) {
+            $scope.vertices[i].grado=0;
+          }
         }
 
         $scope.eliminarConexion = function(conexion) {
