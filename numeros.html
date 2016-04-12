@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>Proyecto #3 - Grafos</title>
+    <title>Proyecto #3 - Sistemas Numéricos</title>
 
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -26,12 +26,190 @@
 
     <script src="Materialize/js/bin/materialize.min.js"></script>
     <script src="Materialize/js/bin/init.js"></script>
-    <script src="Angular\app.js"></script>
+    <script src="Angular\numericsys.js"></script>
 
   </head>
 
-  <body >
-    <h1>Sistemas Numéricos</h1>
+  <body ng-app="numericsys">
+    <nav class="" role="navigation">
+      <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo">Proyecto 3</a>
+      </div>
+    </nav>
+    <!--Nav Ends-->
+    <div class="container">
+      <div id="" class="center-align">
+        <div class="row">
+          <h1>Sistenas Numéricos</h1>
+          <span>
+            <a href="index.html">Grafos</a>
+          </span>
+        </div>
+      </div>
+
+      <div class="row" ng-controller="convertion as convertion">
+        <ul class="collapsible" data-collapsible="accordion">
+          <li>
+            <div class="collapsible-header">
+              Decimal a Binario
+            </div>
+            <div ng-controller="decToBin as DecBin" class="collapsible-body center-align">
+              <div class="input-field margin-sides">
+                <input ng-model="DecBin.number" id="costo" type="number" class="validate">
+                <label for="costo">Número</label>
+              </div>
+
+              <span class="center-align">
+                <a ng-click="DecBin.convert()" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
+                  <i class="material-icons left">play_arrow</i>Convertir
+                </a>
+              </span>
+
+              <br/>
+
+              <h4 ng-bind="DecBin.resultado">
+
+              </h4>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapsible-header">
+              Binario a Decimal
+            </div>
+            <div ng-controller="binToDec as BinDec" class="collapsible-body center-align">
+              <div class="input-field margin-sides">
+                <input ng-model="BinDec.number" id="costo" type="number" class="validate">
+                <label for="costo">Número</label>
+              </div>
+
+              <span class="center-align">
+                <a ng-click="BinDec.convert()" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
+                  <i class="material-icons left">play_arrow</i>Convertir
+                </a>
+              </span>
+
+              <br/>
+
+              <h4 ng-bind="BinDec.resultado">
+
+              </h4>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapsible-header">
+              Binario a Octal
+            </div>
+            <div ng-controller="binToOct as BinOct" class="collapsible-body center-align">
+              <div class="input-field margin-sides">
+                <input ng-model="BinOct.number" id="costo" type="number" class="validate">
+                <label for="costo">Número</label>
+              </div>
+
+              <span class="center-align">
+                <a ng-click="BinOct.convert()" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
+                  <i class="material-icons left">play_arrow</i>Convertir
+                </a>
+              </span>
+
+              <br/>
+
+              <h4 ng-bind="BinOct.resultado">
+
+              </h4>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapsible-header">
+              Octal a Binario
+            </div>
+            <div ng-controller="octToBin as OctBin" class="collapsible-body center-align">
+              <div class="input-field margin-sides">
+                <input ng-model="OctBin.number" id="costo" type="number" class="validate">
+                <label for="costo">Número</label>
+              </div>
+
+              <span class="center-align">
+                <a ng-click="OctBin.convert()" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
+                  <i class="material-icons left">play_arrow</i>Convertir
+                </a>
+              </span>
+
+              <br/>
+
+              <h4 ng-bind="OctBin.resultado">
+
+              </h4>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapsible-header">
+              Suma de Binarios
+            </div>
+            <div ng-controller="suma as suma" class="collapsible-body center-align">
+              <div class="row padding-sides">
+                <div class="input-field col s6">
+                  <input ng-model="suma.number1" id="costo" type="number" class="validate">
+                  <label for="costo">Sumando 1</label>
+                </div>
+
+                <div class="input-field col s6">
+                  <input ng-model="suma.number2" id="costo" type="number" class="validate">
+                  <label for="costo">Sumando 2</label>
+                </div>
+              </div>
+
+              <span class="center-align">
+                <a ng-click="suma.sumar()" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
+                  <i class="material-icons left">add</i>Sumar
+                </a>
+              </span>
+
+              <br/>
+
+              <h4 ng-bind="suma.resultado">
+
+              </h4>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapsible-header">
+              Resta de Binarios
+            </div>
+            <div ng-controller="resta as resta" class="collapsible-body center-align">
+              <div class="row padding-sides">
+                <div class="input-field col s6">
+                  <input ng-model="resta.number1" id="costo" type="number" class="validate">
+                  <label for="costo">Minuendo</label>
+                </div>
+
+                <div class="input-field col s6">
+                  <input ng-model="resta.number2" id="costo" type="number" class="validate">
+                  <label for="costo">Sustraendo</label>
+                </div>
+              </div>
+
+              <span class="center-align">
+                <a ng-click="resta.restar()" id="dijkstraBtn" class="btn-margin waves-effect waves-light btn">
+                  <i class="material-icons left">remove</i>Restar
+                </a>
+              </span>
+
+              <br/>
+
+              <h4 ng-bind="resta.resultado">
+
+              </h4>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
 
   </body>
 
