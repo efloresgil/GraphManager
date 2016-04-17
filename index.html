@@ -78,7 +78,7 @@
               </div>
             </div>
             <div class="input-field col s2">
-              <input  id="costo" type="number" class="validate">
+              <input  id="costo" type="number" step="any" class="validate">
               <label for="costo">Costo</label>
             </div>
           </div>
@@ -170,7 +170,7 @@
 
                 <!--<span ng-if="conexion.costo !== 0" class="badge blue-grey white-text">{{conexion.costo}}</span>-->
 
-                <input type="number" ng-model="conexion.costo" class="col s2"/>
+                <input type="number" step="any" ng-model="conexion.costo" class="col s2"/>
 
                 <a ng-click="eliminarConexion(conexion)" href="#!" class="secondary-content">
                   <i class="material-icons text-red small">delete</i>
@@ -228,7 +228,7 @@
             <div id="dijkstraResult" class="" ng-bind-html="dijkstra_html"></div>
 
             <h3 ng-if="arbolKruskal">Árbol de expansión Kruskal</h3>
-            <ul id="KruskalTree">
+            <ul id="KruskalTree" class="left-align">
               <li ng-repeat="hijo in arbolKruskal" ng-include="'KruskalTreeTemplate'"></li>
             </ul>
           </div>
